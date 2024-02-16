@@ -7,10 +7,10 @@ from planner.pages.common import Page
 
 
 class Page1(Page):
-    def __init__(self, state):
+    def __init__(self, state) -> None:
         self.state = state
 
-    def write(self):
+    def write(self) -> None:
         st.title("Mortgage Calculator")  # TODO make class name?
 
         # slider_value = st.slider(

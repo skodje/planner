@@ -8,23 +8,22 @@ from planner.utils import add_custom_css
 add_custom_css()
 
 
-def create_person():
+def create_person() -> None:
     with st.sidebar.form("my_form"):
         st.write("New Person")
-        name = st.text_input(label="Name", placeholder="Jabba Bibaba")
+        st.text_input(label="Name", placeholder="Jabba Bibaba")
         col1, col2 = st.columns(2)
-        salaray = col1.text_input(label="Salaray", placeholder="100")
+        col1.text_input(label="Salaray", placeholder="100")
         col2.selectbox(label="Currency", options=[c.name for c in mortgage.Currency])
 
         # Every form must have a submit button.
         submitted = st.form_submit_button("Submit")
         if submitted:
             return
-            # st.write("slider", slider_val, "checkbox", checkbox_val)
 
 
 @provide_state()
-def main(state=None):
+def main(state=None) -> None:
     current_page = st.sidebar.radio("Go To", list(PAGE_MAP))
     with st.sidebar.container(border=True):
         st.button(
