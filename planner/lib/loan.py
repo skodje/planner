@@ -13,12 +13,19 @@ class Currency(Enum):
     NOK = auto()
 
 
+class TermsType(Enum):
+    years = auto()
+    months = auto()
+
+
 @dataclasses.dataclass
-class Mortgage:
-    principal: int | float  # original amount borrowed.
-    interest_rate: int | float
-    years: int = 25
-    extra_payment: int | float = 0.0
+class Loan:
+    name: str = ""
+    principal: float = 0.0  # original amount borrowed.
+    interest_rate: float = 0.0  # Tunable
+    terms: int = 25  # Tunable
+    terms_type: str = TermsType.years  # Tunable
+    extra_payment: int | float = 0.0  # Tunable
     currency: Currency = Currency.NOK
 
     def payment_schedule(self):
@@ -47,12 +54,20 @@ class Mortgage:
 
     @property
     def total_months(self) -> int:
-        return self.years * 12
+        match self.terms_type:
+            case TermsType.years.name:
+                return self.terms * 12
+            case TermsType.months.name:
+                return self.terms
+            case _:
+                raise RuntimeError(f"Unexpected {self.terms_type}")
 
     @property
     def monthly_payment(self) -> float:
         # TODO consider caching?
-        # Calculate the monthly payment using the formula for a fixed-rate mortgage
+        # Calculate the monthly payment using the formula for a fixed-rate loan
+        print(f"{self.total_months=}")
+        print(f"{self.monthly_interest_rate=}")
         return (
             self.principal
             * (
@@ -61,12 +76,3 @@ class Mortgage:
             )
             / ((1 + self.monthly_interest_rate) ** self.total_months - 1)
         )
-
-
-# foo = Mortgage(5_600_000, 5.19)
-# interest, downpayment = foo.monthly_payment_alloc()
-# print(f"{interest=}")
-# print(f"{downpayment=}")
-#
-# for payment in foo.payment_schedule():
-#    print(payment)
