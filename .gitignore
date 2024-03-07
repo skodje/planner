@@ -6,3 +6,6 @@ trash
 *.pyc
 
 .python-version
+
+
+*.swp
