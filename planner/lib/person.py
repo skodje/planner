@@ -9,3 +9,6 @@ class Person:
     salary: float | int = 0.0
     assets: float | int = 0.0
     currency: Currency = Currency.NOK
+
+    def __str__(self):
+        return f"**{self.name}**: Salary: {self.salary}"

@@ -18,6 +18,9 @@ pre-commit = "^3.6.2"
 ruff = "^0.3.1"
 black = "^24.2.0"
 
+[tool.ruff]
+line-length = 88
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

@@ -8,7 +8,6 @@ import streamlit as st
 
 from planner.lib.loan import Loan, TermsType
 from planner.lib.person import Person
-from planner.lib.utils import change_widget_font_size
 
 st.set_page_config(
     page_title="Data entry",
@@ -28,58 +27,22 @@ primary_submit = partial(
 )
 
 
-def dataclass_to_markdown(cls) -> str:
-    """
-    Convert a dataclass to Markdown format.
-
-    Args:
-        cls (Any): The dataclass to be converted.
-
-    Returns:
-        str: Markdown representation of the dataclass.
-    """
-    # Header
-    markdown = f"## {cls.__name__}\n\n"
-
-    # Attributes
-    markdown += "| Attribute | Type | Description |\n"
-    markdown += "| --- | --- | --- |\n"
-    for field in fields(cls):
-        markdown += f"| {field.name} | {field.type.__name__} |  |\n"
-
-    # Methods
-    markdown += "\n### Methods:\n\n"
-    for name, method in inspect.getmembers(cls, inspect.isfunction):
-        if not name.startswith("__"):
-            params = inspect.signature(method).parameters
-            param_str = ", ".join(
-                [
-                    f"{param}: {param_info.annotation.__name__}"
-                    for param, param_info in params.items()
-                ]
-            )
-            return_type = inspect.signature(method).return_annotation.__name__
-            markdown += f"- `{name}({param_str}) -> {return_type}`: \n\n"
-
-    return markdown
-
-
 ### FOR TESTING ###
-st.session_state.people["Ida"] = Person(
-    name="Ida",
-    salary=1_050_000,
-    assets=100,
-)
-st.session_state.people["Lars"] = Person(
-    name="Lars",
-    salary=954_000,
-    assets=100,
-)
-st.session_state.people["August"] = Person(
-    name="August",
-    salary=100,
-    assets=100,
-)
+# st.session_state.people["Rizzy"] = Person(
+#    name="Rizzy",
+#    salary=800_000,
+#    assets=300_000,
+# )
+# st.session_state.people["Izy"] = Person(
+#    name="Izy",
+#    salary=900_000,
+#    assets=500_000,
+# )
+# st.session_state.people["Lizzy"] = Person(
+#    name="Lizzy",
+#    salary=10_000,
+#    assets=100,
+# )
 ### END FOR TESTING ###
 
 
@@ -98,8 +61,30 @@ LABELS = {
         "size": "20px",
     },
 }
-# for et, spec in LABELS.items():
-#    change_widget_font_size(et, spec["size"])
+
+
+def update_sidebar(session_state_key: str) -> None:
+    """Function to display session state items in the sidebar, with the ability to delete items.
+
+    Args:
+        session_state_key (str): Key in st.session_state to manage (e.g., 'people').
+
+    """
+    if not (items := st.session_state.get(session_state_key)):
+        return
+
+    st.sidebar.markdown(f"## {session_state_key.capitalize()}")
+
+    for name in list(items):
+        info = items[name]
+        st.sidebar.write(str(info))
+
+        if st.sidebar.button("Delete", key=f"{session_state_key}_{name}_delete"):
+            del items[name]
+            st.session_state[session_state_key] = items
+            break
+
+    st.sidebar.divider()
 
 
 # -------------------#
@@ -188,7 +173,7 @@ def stakeholder_context(col1, col2):
                 [
                     st.session_state.people[stakeholder].salary
                     for stakeholder in stakeholders
-                ]
+                ],
             )
         else:
             distribution = [100 / len(stakeholders)] * len(stakeholders)
@@ -238,13 +223,8 @@ st.divider()
 # ---------------#
 # Data display  #
 # ---------------#
-if people := st.session_state.get("people"):
-    # st.markdown("# Foo bar")
-    st.write(dataclass_to_markdown(people["Ida"]))
-    # st.write(people)
-if loans := st.session_state.get("loans"):
-    # st.markdown("# Foo bar")
-    st.write(loans)
+update_sidebar("people")
+update_sidebar("loans")
 
 st.divider()
 
@@ -267,7 +247,7 @@ if calculate and st.session_state.loans:
 
     total_interest_paid = df["Interest"].sum()
     st.write(
-        "Total Interest Paid: " f"{total_interest_paid:,.2f} \u00A4",
+        "Total Interest Paid: " f"{total_interest_paid:,.2f} \u00a4",
     )
 
     st.subheader("Visualization")
